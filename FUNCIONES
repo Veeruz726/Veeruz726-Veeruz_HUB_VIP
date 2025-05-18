@@ -59,6 +59,12 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
+function roundButton(button)
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0, 8)
+    UICorner.Parent = button
+end
+
 -- Botón de DETENER
         local StopButton = Instance.new("TextButton")
         StopButton.Parent = PlayerListFrame
