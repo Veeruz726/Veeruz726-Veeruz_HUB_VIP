@@ -606,14 +606,10 @@ pcall(function()
     end
 end)
 
-_G.Status = _G.Status or {
-    Finished = false
-}
-
 -- logica que establece un limite de puntos para el namek
 if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
     if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-        _G.Status.Finished = true
+        Finished = true
         PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
         SendNotification("Namek", "Puntos Max", 5)
 
