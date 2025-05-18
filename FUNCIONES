@@ -12,6 +12,7 @@ local whitelist = {
     [1320828348] = true, --Galahan
     [1574131335] = true,  --Galahan 
     [3181546294] = true --magindeprueba
+    [2222593571] = true --Shadowknight1702  
 }
 
 -- Si no está en whitelist, mostrar advertencia en pantalla
