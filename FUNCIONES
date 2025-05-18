@@ -10,7 +10,8 @@ local whitelist = {
     [1092649198] = true, --Leon
     [605427249] = true, --Leon
     [1320828348] = true, --Galahan
-    [1574131335] = true  --Galahan
+    [1574131335] = true,  --Galahan 
+    [3181546294] = true --magindeprueba
 }
 
 -- Si no está en whitelist, mostrar advertencia en pantalla
