@@ -11,7 +11,7 @@ local whitelist = {
     [605427249] = true, --Leon
     [1320828348] = true, --Galahan
     [1574131335] = true,  --Galahan 
-    [3181546294] = true --magindeprueba
+    [3181546294] = true, --magindeprueba
     [2222593571] = true --Shadowknight1702  
 }
 
