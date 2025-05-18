@@ -65,6 +65,8 @@ function roundButton(button)
     UICorner.Parent = button
 end
 
+local yOffset = 0
+
 -- Botón de DETENER
         local StopButton = Instance.new("TextButton")
         StopButton.Parent = PlayerListFrame
