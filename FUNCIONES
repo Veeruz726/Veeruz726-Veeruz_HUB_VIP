@@ -4,9 +4,13 @@ local localPlayer = Players.LocalPlayer
 
 -- Whitelist por UserId (más seguro)
 local whitelist = {
-    [566311853] = true, 
-    [4402007931] = true,
-    [7207966115] = true
+    [566311853] = true, --Roxana
+    [4402007931] = true, --Veeruz
+    [7207966115] = true, --Daurent 
+    [1092649198] = true, --Leon
+    [605427249] = true, --Leon
+    [1320828348] = true, --Galahan
+    [1574131335] = true  --Galahan
 }
 
 -- Si no está en whitelist, mostrar advertencia en pantalla
