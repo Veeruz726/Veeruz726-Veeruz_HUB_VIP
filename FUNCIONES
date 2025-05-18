@@ -367,11 +367,11 @@ Conn = Player.CharacterAdded:Connect(function()
             Doing = true
 
             -- Finalizar conexiones si el proceso ya está terminado
-           if _G.Status and _G.Status.Finished then
-        Conn:Disconnect()
-        Conn2:Disconnect()
-        return
-    end
+           if Finished then
+                Conn:Disconnect()
+                Conn2:Disconnect()
+                return
+            end
 
             -- Incrementar reinicios duros y manejar errores graves
             HardResets += 1
@@ -613,7 +613,7 @@ _G.Status = _G.Status or {
 -- logica que establece un limite de puntos para el namek
 if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
     if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-        Finished = true
+        _G.Status.Finished = true
         PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
         SendNotification("Namek", "Puntos Max", 5)
 
