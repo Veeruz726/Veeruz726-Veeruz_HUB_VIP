@@ -59,6 +59,27 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
+-- Botón de DETENER
+        local StopButton = Instance.new("TextButton")
+        StopButton.Parent = PlayerListFrame
+        StopButton.Text = "Detener"
+        StopButton.Size = UDim2.new(1, -10, 0, 30)
+        StopButton.Position = UDim2.new(0, 5, 0, yOffset)
+        StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- Rojo sobrio
+        StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        StopButton.Font = Enum.Font.GothamBold
+        StopButton.TextSize = 16
+        StopButton.ZIndex = 2
+        roundButton(StopButton)
+
+        StopButton.MouseButton1Click:Connect(function()
+            
+        Finished = true
+
+        end)
+
+        yOffset += 35
+
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
 
