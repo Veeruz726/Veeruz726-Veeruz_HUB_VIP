@@ -84,8 +84,6 @@ end
 
         end)
 
-        yOffset += 35
-
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
 
