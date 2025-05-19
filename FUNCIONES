@@ -222,14 +222,14 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
 
                 until Player.Character.Race.Value == "Namekian"
 
-                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+                Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
                 Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(5)
 
-                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+                Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
             end
         end
     end)
@@ -277,6 +277,12 @@ PG.ChildAdded:Connect(function(Child)
     end
 end)
 
+if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
+    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+
+    task.wait(4)
+end
+
 if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
     Finished = true  -- Paso 1: Marcar como terminado
 
@@ -305,7 +311,7 @@ if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANameki
         PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
         SendNotification("Namek", "Puntos Max", 5)
 
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 2, {
+        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
             "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
         }, true)
 
@@ -318,13 +324,6 @@ if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANameki
     end
 end
 
-if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxPoints then
-    Finished = true
-    Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "MAX POINTS REACHED"
-
-    SendNotification("Veeruz", "Max points reached", 5)
-    return
-end
 -- Definimos la función para manejar el caso de nivel menor a 44
 local function HandleLevelBelow44()
     Talk("Bulma", {"k", "Yes", "k"} , Settings.WaitTimeTalk, nil, false)
@@ -364,7 +363,7 @@ if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 55 then
         task.wait(3)
     end
 else
-    print("Slot Namekiano ha alcanzado el nivel 75.")
+    print("Listo Para Otorgar Stats.")
     -- Aquí puedes añadir cualquier otra acción específica para nivel 55 o superior, si lo necesitas.
 end
 
@@ -387,7 +386,7 @@ Conn = Player.CharacterAdded:Connect(function()
         task.wait(10)
 
         -- Verificar si han pasado 10 segundos desde el último cambio
-        if tick() - Last >= 10 and BoosterTries < 5 and not Doing then
+        if tick() - Last >= 8 and BoosterTries < 5 and not Doing then
             Doing = true
 
             -- Finalizar conexiones si el proceso ya está terminado
@@ -449,7 +448,7 @@ end)
 
 task.spawn(function()
     while true do
-        if BoosterTries >= 100 then
+        if BoosterTries >= 3 then
 
             Stop = true
 
@@ -578,7 +577,7 @@ Player.Character:WaitForChild("PowerOutput", 30)
 task.wait(Settings.CharacterDelayTime)
 
  -- Variable para controlar la interrupción del bucle principal
-_G.breakk = false
+breakk = false
 
 -- Intentar ejecutar la lógica principal
 pcall(function()
