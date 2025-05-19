@@ -61,7 +61,6 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
-local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
 
 pcall(function()
@@ -150,7 +149,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
 
     for idx = 1, #Content do
 
-        if Settings.VIP and NPC == "Character Slot Changer" and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
+        if Settings.Mode2 and NPC == "Character Slot Changer" and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
             repeat
                 Player.Backpack.ServerTraits.ChatStart:FireServer(workspace.FriendlyNPCs["Character Slot Changer"])
                 task.wait()
@@ -167,7 +166,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
             repeat task.wait() until not Stop
         end
 
-        if Settings.VIP and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
+        if Settings.Mode2 and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
             repeat
                 Player.Backpack.ServerTraits.ChatAdvance:FireServer({"Yes"})
                 task.wait()
@@ -283,25 +282,35 @@ if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekia
     task.wait(4)
 end
 
--- logica que establece un limite de puntos para el namek
-if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
-    if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-        Finished = true
-        PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
-        SendNotification("Namek", "Puntos Max", 5)
+-- Bucle principal de verificación
+task.spawn(function()
+    while not Finished do
+        local currentPoints = tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text)
+        local currentRace = Player.Character.Race.Value
 
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
-            "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
-        }, true)
+        -- Solo verificamos MaxStatPoints si el personaje es Namekiano
+        if currentRace == "Namekian" and currentPoints == Settings.MaxStatPoints then
+            if not Settings.IsPointSlotANamekian then
+                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
+                    "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
+                }, true)
+                task.wait(6)
+            end
 
-        task.wait(1)
+            Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+        end
 
-        Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+        -- Verificación general para cualquier raza
+        if currentPoints >= Settings.MaxPoints then
+            Finished = true
+            Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "MAX POINTS REACHED"
+            SendNotification("Veeruz", "Max points reached", 5)
+            break -- Salimos del bucle
+        end
 
-        breakk = true
-        return
+        task.wait(0.5) -- Espera entre ciclos para rendimiento
     end
-end
+end)
 
 -- Definimos la función para manejar el caso de nivel menor a 44
 local function HandleLevelBelow44()
@@ -342,7 +351,7 @@ if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 55 then
         task.wait(3)
     end
 else
-    print("Listo Para Otorgar Stats.")
+    print("Slot Namekiano ha alcanzado el nivel 75.")
     -- Aquí puedes añadir cualquier otra acción específica para nivel 55 o superior, si lo necesitas.
 end
 
@@ -365,7 +374,7 @@ Conn = Player.CharacterAdded:Connect(function()
         task.wait(10)
 
         -- Verificar si han pasado 10 segundos desde el último cambio
-        if tick() - Last >= 8 and BoosterTries < 5 and not Doing then
+        if tick() - Last >= 10 and BoosterTries < 5 and not Doing then
             Doing = true
 
             -- Finalizar conexiones si el proceso ya está terminado
@@ -427,7 +436,7 @@ end)
 
 task.spawn(function()
     while true do
-        if BoosterTries >= 3 then
+        if BoosterTries >= 100 then
 
             Stop = true
 
@@ -556,7 +565,7 @@ Player.Character:WaitForChild("PowerOutput", 30)
 task.wait(Settings.CharacterDelayTime)
 
  -- Variable para controlar la interrupción del bucle principal
-breakk = false
+_G.breakk = false
 
 -- Intentar ejecutar la lógica principal
 pcall(function()
@@ -618,7 +627,7 @@ task.spawn(function()
 end)
 
 -- Salir del flujo principal si se ha alcanzado el máximo
-if breakk then
+if _G.breakk then
     return
 end
 
