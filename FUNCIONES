@@ -61,6 +61,30 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
+-- Botón de DETENER
+        local StopButton = Instance.new("TextButton")
+        StopButton.Parent = PlayerListFrame
+        StopButton.Text = "Detener"
+        StopButton.Size = UDim2.new(1, -10, 0, 30)
+        StopButton.Position = UDim2.new(0, 5, 0, yOffset)
+        StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- Rojo sobrio
+        StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+        StopButton.Font = Enum.Font.GothamBold
+        StopButton.TextSize = 16
+        StopButton.ZIndex = 2
+        roundButton(StopButton)
+
+        StopButton.MouseButton1Click:Connect(function()
+            
+        Finished = true
+
+        end)
+
+        yOffset += 35
+
+        -- Actualiza el tamaño del scroll
+        PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
+
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
 
@@ -111,7 +135,7 @@ Player.Idled:Connect(function()
     game:GetService("VirtualUser"):ClickButton2(Vector2.new())
 end)
 
-task.wait(1 + Settings.ExtraTime)
+task.wait(Settings.ExtraTime)
 
 if game.PlaceId == 552500546 then
     task.wait(1)
@@ -160,7 +184,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
         if Wait then
             WaitTill(Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel, Texts[idx], WaitTime, NPC)
         else
-            task.wait(Settings.WaitTimeTalk + 0.60)
+            task.wait(Settings.WaitTimeTalk)
         end
 
         if not SkipStop and Stop then
@@ -178,7 +202,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
                 task.wait()
             until PG.HUD.Bottom.ChatGui.TextLabel.Text == "Which slot would you like to play in?"
 
-            task.wait(Settings.WaitTimeSlotChange + 0.1)
+            task.wait(Settings.WaitTimeSlotChange)
 
             Player.Backpack.ServerTraits.ChatAdvance:FireServer({Content[3]})
 
@@ -202,7 +226,7 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
         if Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel.Text == "Mr Popo is a nice guy" then
             Stop = true
 
-            task.wait(6 + Settings.CharacterDelayTime)
+            task.wait(Settings.CharacterDelayTime)
 
             if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                 local Tries = 0
@@ -243,7 +267,7 @@ PG.ChildAdded:Connect(function(Child)
             if Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel.Text == "Mr Popo is a nice guy" then
                 Stop = true
 
-                task.wait(5 + Settings.CharacterDelayTime)
+                task.wait(Settings.CharacterDelayTime)
 
                 if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                     local Tries = 0
@@ -365,11 +389,11 @@ Conn = Player.CharacterAdded:Connect(function()
         task.wait(10)
 
         -- Verificar si han pasado 10 segundos desde el último cambio
-        if tick() - Last >= 7 and BoosterTries < 5 and not Doing then
+        if tick() - Last >= 10 and BoosterTries < 5 and not Doing then
             Doing = true
 
             -- Finalizar conexiones si el proceso ya está terminado
-           if Finished then
+            if Finished then
                 Conn:Disconnect()
                 Conn2:Disconnect()
                 return
@@ -431,7 +455,7 @@ task.spawn(function()
 
             Stop = true
 
-            task.wait(5 + Settings.CharacterDelayTime)
+            task.wait(Settings.CharacterDelayTime)
 
             if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                 local Tries = 0
@@ -556,7 +580,7 @@ Player.Character:WaitForChild("PowerOutput", 30)
 task.wait(Settings.CharacterDelayTime)
 
  -- Variable para controlar la interrupción del bucle principal
-breakk = false
+_G.breakk = false
 
 -- Intentar ejecutar la lógica principal
 pcall(function()
