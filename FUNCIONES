@@ -160,7 +160,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
         if Wait then
             WaitTill(Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel, Texts[idx], WaitTime, NPC)
         else
-            task.wait(Settings.WaitTimeTalk + 0.40)
+            task.wait(Settings.WaitTimeTalk + 0.60)
         end
 
         if not SkipStop and Stop then
