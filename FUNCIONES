@@ -64,30 +64,63 @@ end
 local Players = game:GetService("Players")
 local localPlayer = Players.LocalPlayer
 
-if roundButton then
-    roundButton(StopButton)
+-- Obtener ScreenGui principal (asumiendo que está en CoreGui o PlayerGui)
+local gui = localPlayer:WaitForChild("PlayerGui"):FindFirstChild("Veeruz-INF-Stats-VIP") or
+            game.CoreGui:FindFirstChild("Veeruz-INF-Stats-VIP")
+
+if not gui then
+    warn("No se encontró el ScreenGui principal.")
+    return
 end
 
--- Espera que PlayerGui esté disponible
-local playerGui = localPlayer:WaitForChild("PlayerGui")
+-- Obtener PlayerListFrame
+local PlayerListFrame = gui:FindFirstChild("OuterFrame") and gui.OuterFrame:FindFirstChild("PlayerListFrame")
+if not PlayerListFrame then
+    warn("No se encontró PlayerListFrame.")
+    return
+end
 
--- Crea el botón "Detener"
-local StopButton = Instance.new("TextButton")
-StopButton.Parent = PlayerListFrame
-StopButton.Text = "Detener"
-StopButton.Size = UDim2.new(1, -10, 0, 30)
-StopButton.Position = UDim2.new(0, 5, 0, yOffset)
-StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-StopButton.Font = Enum.Font.GothamBold
-StopButton.TextSize = 16
-StopButton.ZIndex = 2
+-- Calcular yOffset basado en los hijos actuales (para no sobreponer)
+local function calcularYOffset()
+    local maxY = 0
+    for _, child in pairs(PlayerListFrame:GetChildren()) do
+        if child:IsA("GuiObject") then
+            local childBottom = child.Position.Y.Offset + child.Size.Y.Offset
+            if childBottom > maxY then
+                maxY = childBottom
+            end
+        end
+    end
+    return maxY + 5 -- margen extra
+end
 
-StopButton.MouseButton1Click:Connect(function()
+local yOffset = calcularYOffset()
 
-Finished = true
+-- Evitar crear botón si ya existe
+if not PlayerListFrame:FindFirstChild("StopButton") then
+    local StopButton = Instance.new("TextButton")
+    StopButton.Name = "StopButton"
+    StopButton.Parent = PlayerListFrame
+    StopButton.Text = "Detener"
+    StopButton.Size = UDim2.new(1, -10, 0, 30)
+    StopButton.Position = UDim2.new(0, 5, 0, yOffset)
+    StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+    StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    StopButton.Font = Enum.Font.GothamBold
+    StopButton.TextSize = 16
+    StopButton.ZIndex = 2
 
-end)
+    StopButton.MouseButton1Click:Connect(function()
+        print("Script detenido.")
+        _G.Status = _G.Status or {}
+        _G.Status.Finished = true
+    end)
+
+    -- Actualizar CanvasSize para scroll
+    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset + 35)
+else
+    print("El botón 'Detener' ya existe.")
+end
 
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
@@ -253,6 +286,8 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
                 Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
+                local stopped = checkPointLimit(Player, Settings, PG)
+                if not stopped then
                 Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(5)
@@ -262,6 +297,30 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
         end
     end)
 end
+
+local function checkPointLimit(Player, Settings, PG)
+    if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
+        local points = tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text)
+        if points >= Settings.MaxStatPoints then
+            Finished = true
+
+            PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Max Points"
+            SendNotification("Namek", "Max Points", 5)
+
+            Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
+                "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
+            }, true)
+
+            task.wait(6)
+
+            Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 4, nil, false)
+
+            return true
+        end
+    end
+    return false
+end
+
 
 PG.ChildAdded:Connect(function(Child)
     if Child.Name == "HUD" and not Finished then
