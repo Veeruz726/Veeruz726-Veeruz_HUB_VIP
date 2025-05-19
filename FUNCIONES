@@ -277,23 +277,24 @@ PG.ChildAdded:Connect(function(Child)
     end
 end)
 
-if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
-    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+-- logica que establece un limite de puntos para el namek
+if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
+    if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
+        Finished = true
+        PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
+        SendNotification("Namek", "Puntos Max", 5)
 
-    task.wait(4)
-end
+        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 2, {
+            "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
+        }, true)
 
-if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-    Finished = true  -- Paso 1: Marcar como terminado
-
-    -- Paso 2: Cambiar al slot Namekian si es necesario
-    if not Settings.IsPointSlotANamekian and Player.Character.Race.Value == "Namekian" then
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
         task.wait(6)
-    end
 
-    -- Paso 3: Empezar nuevo juego
-    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+        Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+
+        breakk = true
+        return
+    end
 end
 
 if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxPoints then
