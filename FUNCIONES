@@ -294,7 +294,7 @@ task.spawn(function()
                 Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
                     "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
                 }, true)
-                task.wait(6)
+                task.wait()
             end
 
             Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
@@ -351,8 +351,8 @@ if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 55 then
         task.wait(3)
     end
 else
-    print("Slot Namekiano ha alcanzado el nivel 75.")
-    -- Aquí puedes añadir cualquier otra acción específica para nivel 55 o superior, si lo necesitas.
+    print("Slot Namekiano ha alcanzado el nivel 55.")
+    
 end
 
 -- Conexión principal: Detectar cuando se añade un nuevo personaje
@@ -436,7 +436,7 @@ end)
 
 task.spawn(function()
     while true do
-        if BoosterTries >= 100 then
+        if BoosterTries >= 30 then
 
             Stop = true
 
@@ -627,7 +627,7 @@ task.spawn(function()
 end)
 
 -- Salir del flujo principal si se ha alcanzado el máximo
-if _G.breakk then
+if breakk then
     return
 end
 
