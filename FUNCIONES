@@ -237,29 +237,6 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
     end)
 end
 
-local function checkPointLimit(Player, Settings, PG)
-    if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
-        if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-            Finished = true
-
-            PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Max Points"
-            SendNotification("Namek", "Max Points", 5)
-
-            Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
-                "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
-            }, true)
-
-            task.wait(6)
-
-            Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 4, nil, false)
-
-            return true
-        end
-    end
-    return false
-end
-
-
 PG.ChildAdded:Connect(function(Child)
     if Child.Name == "HUD" and not Finished then
         task.wait(0.1)
