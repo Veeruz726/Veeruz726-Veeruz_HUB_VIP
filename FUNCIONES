@@ -112,8 +112,7 @@ if not PlayerListFrame:FindFirstChild("StopButton") then
 
     StopButton.MouseButton1Click:Connect(function()
         print("Script detenido.")
-        _G.Status = _G.Status or {}
-        _G.Status.Finished = true
+        Finished = true
     end)
 
     -- Actualizar CanvasSize para scroll
@@ -283,7 +282,7 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
 
                 until Player.Character.Race.Value == "Namekian"
 
-                Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
+                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
                 local stopped = checkPointLimit(Player, Settings, PG)
@@ -292,7 +291,7 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
 
                 task.wait(5)
 
-                Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
+                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
             end
         end
     end)
