@@ -75,22 +75,6 @@ local yOffset = 0
 -- Espera que PlayerGui esté disponible
 local playerGui = localPlayer:WaitForChild("PlayerGui")
 
--- Asegura que haya un Frame contenedor
-local gui = playerGui:FindFirstChild("MainGui") or Instance.new("ScreenGui", playerGui)
-gui.Name = "MainGui"
-gui.ResetOnSpawn = false
-
--- Crea el contenedor si no existe
-local PlayerListFrame = gui:FindFirstChild("PlayerListFrame") or Instance.new("ScrollingFrame")
-PlayerListFrame.Name = "PlayerListFrame"
-PlayerListFrame.Size = UDim2.new(0, 200, 0, 300)
-PlayerListFrame.Position = UDim2.new(0, 10, 0, 100)
-PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
-PlayerListFrame.ScrollBarThickness = 6
-PlayerListFrame.BackgroundTransparency = 0.5
-PlayerListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
-PlayerListFrame.Parent = gui
-
 -- Crea el botón "Detener"
 local StopButton = Instance.new("TextButton")
 StopButton.Parent = PlayerListFrame
@@ -103,11 +87,10 @@ StopButton.Font = Enum.Font.GothamBold
 StopButton.TextSize = 16
 StopButton.ZIndex = 2
 
--- Acción del botón
-_G.Status = _G.Status or {}
 StopButton.MouseButton1Click:Connect(function()
-    print("Script detenido.")
-    _G.Status.Finished = true
+
+Finished = true
+
 end)
 
 -- Ajusta yOffset y CanvasSize para scroll
@@ -164,7 +147,7 @@ Player.Idled:Connect(function()
     game:GetService("VirtualUser"):ClickButton2(Vector2.new())
 end)
 
-task.wait(Settings.ExtraTime)
+task.wait(1 + Settings.ExtraTime)
 
 if game.PlaceId == 552500546 then
     task.wait(1)
@@ -213,7 +196,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
         if Wait then
             WaitTill(Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel, Texts[idx], WaitTime, NPC)
         else
-            task.wait(Settings.WaitTimeTalk)
+            task.wait(Settings.WaitTimeTalk + 0.40)
         end
 
         if not SkipStop and Stop then
@@ -231,7 +214,7 @@ local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
                 task.wait()
             until PG.HUD.Bottom.ChatGui.TextLabel.Text == "Which slot would you like to play in?"
 
-            task.wait(Settings.WaitTimeSlotChange)
+            task.wait(Settings.WaitTimeSlotChange + 0.1)
 
             Player.Backpack.ServerTraits.ChatAdvance:FireServer({Content[3]})
 
@@ -255,13 +238,13 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
         if Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel.Text == "Mr Popo is a nice guy" then
             Stop = true
 
-            task.wait(Settings.CharacterDelayTime)
+            task.wait(6 + Settings.CharacterDelayTime)
 
             if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                 local Tries = 0
 
                 repeat
-                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                     task.wait(5)
 
@@ -278,7 +261,7 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
                 Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
-                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(5)
 
@@ -296,13 +279,13 @@ PG.ChildAdded:Connect(function(Child)
             if Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel.Text == "Mr Popo is a nice guy" then
                 Stop = true
 
-                task.wait(Settings.CharacterDelayTime)
+                task.wait(5 + Settings.CharacterDelayTime)
 
                 if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                     local Tries = 0
 
                     repeat
-                        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                         task.wait(1)
 
@@ -319,7 +302,7 @@ PG.ChildAdded:Connect(function(Child)
                     Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
 
                 elseif Player.Character.Race.Value == "Namekian" then
-                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                     task.wait(5)
 
@@ -341,7 +324,7 @@ if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.M
 
     -- Paso 2: Cambiar al slot Namekian si es necesario
     if not Settings.IsPointSlotANamekian and Player.Character.Race.Value == "Namekian" then
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
         task.wait(6)
     end
 
@@ -480,17 +463,17 @@ end)
 
 task.spawn(function()
     while true do
-        if BoosterTries >= 3 then
+        if BoosterTries >= 100 then
 
             Stop = true
 
-            task.wait(Settings.CharacterDelayTime)
+            task.wait(5 + Settings.CharacterDelayTime)
 
             if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
                 local Tries = 0
 
                 repeat
-                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                     task.wait(1)
 
@@ -507,7 +490,7 @@ task.spawn(function()
                 Talk("Start New Game [Redo Character]", {"No", "k", "No"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
-                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(5)
 
@@ -668,7 +651,7 @@ if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANameki
         PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
         SendNotification("Namek", "Puntos Max", 5)
 
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
+        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {
             "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
         }, true)
 
