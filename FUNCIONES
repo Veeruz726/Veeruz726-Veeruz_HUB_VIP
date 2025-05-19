@@ -95,7 +95,6 @@ end)
 
 -- Ajusta yOffset y CanvasSize para scroll
 yOffset += 35
-PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
