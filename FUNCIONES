@@ -283,27 +283,6 @@ if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekia
     task.wait(4)
 end
 
-if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
-    Finished = true  -- Paso 1: Marcar como terminado
-
-    -- Paso 2: Cambiar al slot Namekian si es necesario
-    if not Settings.IsPointSlotANamekian and Player.Character.Race.Value == "Namekian" then
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
-        task.wait(6)
-    end
-
-    -- Paso 3: Empezar nuevo juego
-    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
-end
-
-if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxPoints then
-    Finished = true
-    Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "MAX POINTS REACHED"
-
-    SendNotification("Veeruz", "Max points reached", 5)
-    return
-end
-
 -- logica que establece un limite de puntos para el namek
 if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
     if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
@@ -315,7 +294,7 @@ if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANameki
             "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
         }, true)
 
-        task.wait(6)
+        task.wait(1)
 
         Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
 
