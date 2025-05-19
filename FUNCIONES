@@ -68,10 +68,6 @@ if roundButton then
     roundButton(StopButton)
 end
 
-
--- Inicializa yOffset para posición vertical de botones
-local yOffset = 0
-
 -- Espera que PlayerGui esté disponible
 local playerGui = localPlayer:WaitForChild("PlayerGui")
 
@@ -92,9 +88,6 @@ StopButton.MouseButton1Click:Connect(function()
 Finished = true
 
 end)
-
--- Ajusta yOffset y CanvasSize para scroll
-yOffset += 35
 
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
