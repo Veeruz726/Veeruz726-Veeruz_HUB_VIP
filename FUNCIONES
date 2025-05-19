@@ -239,8 +239,7 @@ end
 
 local function checkPointLimit(Player, Settings, PG)
     if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
-        local points = tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text)
-        if points >= Settings.MaxStatPoints then
+        if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
             Finished = true
 
             PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Max Points"
@@ -636,7 +635,6 @@ end)
 
 -- logica que establece un limite de puntos para el namek
 if Player.Character.Race.Value == "Namekian" and not Settings.IsPointSlotANamekian then
-    if tonumber(Player.PlayerGui.HUD.Bottom.Stats.StatPoints.Val.Text) >= Settings.MaxStatPoints then
         Finished = true
         PG.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
         SendNotification("Namek", "Puntos Max", 5)
