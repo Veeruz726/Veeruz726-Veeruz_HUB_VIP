@@ -72,7 +72,6 @@ end
         StopButton.Font = Enum.Font.GothamBold
         StopButton.TextSize = 16
         StopButton.ZIndex = 2
-        roundButton(StopButton)
 
         StopButton.MouseButton1Click:Connect(function()
             
