@@ -61,28 +61,58 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
--- Botón de DETENER
-        local StopButton = Instance.new("TextButton")
-        StopButton.Parent = PlayerListFrame
-        StopButton.Text = "Detener"
-        StopButton.Size = UDim2.new(1, -10, 0, 30)
-        StopButton.Position = UDim2.new(0, 5, 0, yOffset)
-        StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- Rojo sobrio
-        StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-        StopButton.Font = Enum.Font.GothamBold
-        StopButton.TextSize = 16
-        StopButton.ZIndex = 2
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
 
-        StopButton.MouseButton1Click:Connect(function()
-            
-        Finished = true
+if roundButton then
+    roundButton(StopButton)
+end
 
-        end)
 
-        yOffset += 35
+-- Inicializa yOffset para posición vertical de botones
+local yOffset = 0
 
-        -- Actualiza el tamaño del scroll
-        PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
+-- Espera que PlayerGui esté disponible
+local playerGui = localPlayer:WaitForChild("PlayerGui")
+
+-- Asegura que haya un Frame contenedor
+local gui = playerGui:FindFirstChild("MainGui") or Instance.new("ScreenGui", playerGui)
+gui.Name = "MainGui"
+gui.ResetOnSpawn = false
+
+-- Crea el contenedor si no existe
+local PlayerListFrame = gui:FindFirstChild("PlayerListFrame") or Instance.new("ScrollingFrame")
+PlayerListFrame.Name = "PlayerListFrame"
+PlayerListFrame.Size = UDim2.new(0, 200, 0, 300)
+PlayerListFrame.Position = UDim2.new(0, 10, 0, 100)
+PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+PlayerListFrame.ScrollBarThickness = 6
+PlayerListFrame.BackgroundTransparency = 0.5
+PlayerListFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+PlayerListFrame.Parent = gui
+
+-- Crea el botón "Detener"
+local StopButton = Instance.new("TextButton")
+StopButton.Parent = PlayerListFrame
+StopButton.Text = "Detener"
+StopButton.Size = UDim2.new(1, -10, 0, 30)
+StopButton.Position = UDim2.new(0, 5, 0, yOffset)
+StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+StopButton.Font = Enum.Font.GothamBold
+StopButton.TextSize = 16
+StopButton.ZIndex = 2
+
+-- Acción del botón
+_G.Status = _G.Status or {}
+StopButton.MouseButton1Click:Connect(function()
+    print("Script detenido.")
+    _G.Status.Finished = true
+end)
+
+-- Ajusta yOffset y CanvasSize para scroll
+yOffset += 35
+PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset)
 
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
