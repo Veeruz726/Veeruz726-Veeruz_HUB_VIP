@@ -61,66 +61,6 @@ if not whitelist[localPlayer.UserId] then
     return
 end
 
-local Players = game:GetService("Players")
-local localPlayer = Players.LocalPlayer
-
--- Obtener ScreenGui principal (asumiendo que está en CoreGui o PlayerGui)
-local gui = localPlayer:WaitForChild("PlayerGui"):FindFirstChild("Veeruz-INF-Stats-VIP") or
-            game.CoreGui:FindFirstChild("Veeruz-INF-Stats-VIP")
-
-if not gui then
-    warn("No se encontró el ScreenGui principal.")
-    return
-end
-
--- Obtener PlayerListFrame
-local PlayerListFrame = gui:FindFirstChild("OuterFrame") and gui.OuterFrame:FindFirstChild("PlayerListFrame")
-if not PlayerListFrame then
-    warn("No se encontró PlayerListFrame.")
-    return
-end
-
--- Calcular yOffset basado en los hijos actuales (para no sobreponer)
-local function calcularYOffset()
-    local maxY = 0
-    for _, child in pairs(PlayerListFrame:GetChildren()) do
-        if child:IsA("GuiObject") then
-            local childBottom = child.Position.Y.Offset + child.Size.Y.Offset
-            if childBottom > maxY then
-                maxY = childBottom
-            end
-        end
-    end
-    return maxY + 5 -- margen extra
-end
-
-local yOffset = calcularYOffset()
-
--- Evitar crear botón si ya existe
-if not PlayerListFrame:FindFirstChild("StopButton") then
-    local StopButton = Instance.new("TextButton")
-    StopButton.Name = "StopButton"
-    StopButton.Parent = PlayerListFrame
-    StopButton.Text = "Detener"
-    StopButton.Size = UDim2.new(1, -10, 0, 30)
-    StopButton.Position = UDim2.new(0, 5, 0, yOffset)
-    StopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-    StopButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-    StopButton.Font = Enum.Font.GothamBold
-    StopButton.TextSize = 16
-    StopButton.ZIndex = 2
-
-    StopButton.MouseButton1Click:Connect(function()
-        print("Script detenido.")
-        Finished = true
-    end)
-
-    -- Actualizar CanvasSize para scroll
-    PlayerListFrame.CanvasSize = UDim2.new(0, 0, 0, yOffset + 35)
-else
-    print("El botón 'Detener' ya existe.")
-end
-
 local Player = game.Players.LocalPlayer
 local PG = Player.PlayerGui
 
