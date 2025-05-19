@@ -225,8 +225,7 @@ if Player.PlayerGui:FindFirstChild("HUD") and not Finished then
                 Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
-                checkPointLimit(Player, Settings, PG)
-                if not stopped then
+
                 Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange + 0.3, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(5)
