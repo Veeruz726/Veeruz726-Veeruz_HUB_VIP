@@ -1,0 +1,583 @@
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local localPlayer = Players.LocalPlayer
+local Player = game.Players.LocalPlayer
+
+-- Whitelist por UserId (más seguro)
+local whitelist = {
+    [566311853] = true, --Roxana
+    [4402007931] = true, --Veeruz
+    [7207966115] = true, --Daurent 
+    [1092649198] = true, --Leon
+    [605427249] = true, --Leon
+    [1320828348] = true, --Galahan
+    [1574131335] = true,  --Galahan 
+    [3181546294] = true, --magindeprueba
+    [2222593571] = true --Shadowknight1702  
+}
+
+-- Si no está en whitelist, mostrar advertencia en pantalla
+if not whitelist[localPlayer.UserId] then
+    -- Crear GUI
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.ResetOnSpawn = false
+    screenGui.IgnoreGuiInset = true
+    screenGui.Name = "WhitelistWarning"
+    screenGui.Parent = localPlayer:WaitForChild("PlayerGui")
+
+    -- Fondo negro
+    local background = Instance.new("Frame")
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = Color3.new(0, 0, 0)
+    background.BackgroundTransparency = 0
+    background.Parent = screenGui
+
+    -- Marco rojo
+    local border = Instance.new("Frame")
+    border.Size = UDim2.new(0.5, 0, 0.2, 0)
+    border.Position = UDim2.new(0.25, 0, 0.4, 0)
+    border.BackgroundColor3 = Color3.new(0, 0, 0)
+    border.BorderSizePixel = 5
+    border.BorderColor3 = Color3.new(1, 0, 0)
+    border.Parent = background
+
+    -- Texto
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, 0, 1, 0)
+    label.BackgroundTransparency = 1
+    label.Text = "NO ESTÁS AUTORIZADO PARA USAR ESTE SCRIPT"
+    label.TextColor3 = Color3.new(1, 0, 0)
+    label.TextScaled = true
+    label.Font = Enum.Font.SourceSansBold
+    label.Parent = border
+
+    -- Esperar 10 segundos y luego quitar GUI con transición
+    task.delay(10, function()
+        local tween = TweenService:Create(background, TweenInfo.new(1), {BackgroundTransparency = 1})
+        tween:Play()
+        tween.Completed:Wait()
+        screenGui:Destroy()
+    end)
+
+    return
+end
+
+-- Inicialización
+local Player = game.Players.LocalPlayer
+local VRZ = Player.PlayerGui
+
+
+-- Manejo de errores de teletransporte
+pcall(function()
+    -- Busca el error en la interfaz
+    for _, v in game:GetService("CoreGui").RobloxPromptGui.promptOverlay:GetChildren() do
+        if v.Name == "ErrorPrompt" and v:FindFirstChild("MessageArea") and v.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(2)
+
+            -- Intenta teletransportar al jugador 30 veces
+            for _ = 1, 30 do
+                game:GetService("TeleportService"):Teleport(536102540, Player)
+                task.wait(2)
+            end
+        end
+    end
+
+    -- Conecta un evento para manejar errores futuros
+    game:GetService("CoreGui").RobloxPromptGui.promptOverlay.ChildAdded:Connect(function(child)
+        if child.Name == "ErrorPrompt" and child:FindFirstChild("MessageArea") and child.MessageArea:FindFirstChild("ErrorFrame") then
+            task.wait(2)
+
+            -- Intenta teletransportar al jugador 30 veces
+            for _ = 1, 30 do
+                game:GetService("TeleportService"):Teleport(536102540, Player)
+                task.wait(2)
+            end
+        end
+    end)
+end)
+
+-- Variables globales
+local Stop = false
+local WaitingForPointSlot = false
+local Fixing = false
+local BoostFail = 0
+local HardResets = 0
+local Successful = 0
+local Failed = 0
+local Finished = false
+local Last = false
+local Doing = false
+
+-- Función para esperar a que un NPC termine de hablar
+local function WaitTill(instance, Text, ExtraTime, npc)
+    repeat task.wait() until (instance.Text == Text and Player.PlayerGui.HUD.Bottom.ChatGui.Visible == true)
+
+    if ExtraTime > 0 then
+        task.wait(ExtraTime)
+    end
+end
+
+-- Función para hablar con un NPC
+local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
+    -- Verifica si el NPC tiene un objeto de chat
+    local Chat = NPC ~= "Korin" and workspace.FriendlyNPCs[NPC] or (NPC == "Korin" and workspace.FriendlyNPCs[NPC].Chat.Chat)
+
+    -- Inicia la conversación
+    Player.Backpack.ServerTraits.ChatStart:FireServer(Chat)
+
+    -- Recorre las frases de la conversación
+    for idx = 1, #Content do
+        -- Verifica si es el diálogo del cambiador de ranuras
+        if Settings.VIP and NPC == "Character Slot Changer" and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
+            -- Espera a que el diálogo del cambiador de ranuras sea visible
+            repeat
+                Player.Backpack.ServerTraits.ChatStart:FireServer(workspace.FriendlyNPCs["Character Slot Changer"])
+                task.wait()
+            until VRZ.HUD.Bottom.ChatGui.Visible == true
+        end
+
+        -- Verifica si se debe esperar a que el texto aparezca
+        if Wait then
+            WaitTill(Player.PlayerGui.HUD.Bottom.ChatGui.TextLabel, Texts[idx], WaitTime, NPC)
+        else
+            -- Espera un tiempo predeterminado
+            task.wait(Settings.WaitTimeTalk)
+        end
+
+        -- Verifica si se debe detener el script
+        if not SkipStop and Stop then
+            repeat task.wait() until not Stop
+        end
+
+        -- Maneja el diálogo del cambiador de ranuras
+        if Settings.VIP and Texts and Texts ~= true and Texts[idx] == "Change Character Slots?" then
+            -- Selecciona "Yes" en el diálogo del cambiador de ranuras
+            repeat
+                Player.Backpack.ServerTraits.ChatAdvance:FireServer({"Yes"})
+                task.wait()
+            until VRZ.HUD.Bottom.ChatGui.TextLabel.Text == "Alright"
+
+            -- Selecciona "k" en el diálogo del cambiador de ranuras
+            repeat
+                Player.Backpack.ServerTraits.ChatAdvance:FireServer({"k"})
+                task.wait()
+            until VRZ.HUD.Bottom.ChatGui.TextLabel.Text == "Which slot would you like to play in?"
+
+            -- Espera un tiempo predeterminado
+            task.wait(Settings.WaitTimeSlotChange)
+
+            -- Selecciona la ranura deseada
+            Player.Backpack.ServerTraits.ChatAdvance:FireServer({Content[3]})
+
+            -- Verifica si la ranura se ha seleccionado correctamente
+            task.delay(1, function()
+                if VRZ.HUD.Bottom.ChatGui.TextLabel.Text == "Which slot would you like to play in?" then
+                    Player.Backpack.ServerTraits.ChatAdvance:FireServer({Content[3]})
+                end
+            end)
+
+            -- Termina el diálogo del cambiador de ranuras
+            break
+        end
+
+        -- Envía la siguiente frase del diálogo
+        Player.Backpack.ServerTraits.ChatAdvance:FireServer({Content[idx]})
+    end
+end
+
+-- Definimos la función para manejar el caso de nivel menor a 44
+local function HandleLevelBelow44()
+    Talk("Bulma", {"k", "Yes", "k"} , Settings.WaitTimeTalk, nil, false)
+    task.wait(0.8)
+
+    Talk("Spaceship", {"No", "k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.5)
+
+    Talk("Trunks [Future]", {"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.8)
+
+    Talk("TimeMachine",{"No", "k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.5)
+
+    workspace.FriendlyNPCs["Quest Giver"]:Destroy()
+
+    Talk("Quest Giver",{"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.8)
+
+    Talk("NamekianShip",{"k","No","k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.7)
+
+    Talk("Elder Kai",{"k","Yes","k", "k"}, Settings.WaitTimeTalk, nil, false)
+    task.wait(0.7)
+
+    Talk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
+    task.wait(3)
+end
+
+-- Verificamos si el nivel es menor a 55
+if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 55 then
+    if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 44 then
+        HandleLevelBelow44() -- Llamamos a la función si el nivel es menor a 44
+    elseif tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) == 44 then
+        Talk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
+        task.wait(3)
+    end
+else
+    
+    
+end
+
+
+-- Ocultar nombre si está configurado
+if Settings.HideName then
+    Player.PlayerGui.HUD:WaitForChild("Bottom", 30).Stats.Namae.Val.Text = "Veeruz"
+end
+
+
+local Player = game.Players.LocalPlayer
+
+-- Crear la ScreenGui personalizada
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "CustomStatPointsUI"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = Player:WaitForChild("PlayerGui")
+
+-- Crear Frame principal
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 200, 0, 60)
+frame.Position = UDim2.new(0, 210, 0, 90) -- <-- Bajado un poco
+frame.BackgroundColor3 = Color3.new(0.1, 0.05, 0.1)
+frame.BorderColor3 = Color3.new(0.7, 0, 0.7)
+frame.BorderSizePixel = 3
+frame.Parent = screenGui
+
+-- Crear título superior: INF STATS VIP
+local title = Instance.new("TextLabel")
+title.Size = UDim2.new(1, -10, 0, 20)
+title.Position = UDim2.new(0, 5, 0, 3)
+title.BackgroundTransparency = 1
+title.TextColor3 = Color3.new(1, 0.8, 1)
+title.Font = Enum.Font.SourceSansBold
+title.TextSize = 18
+title.Text = "INF STATS VIP"
+title.Parent = frame
+
+-- Crear etiqueta del valor
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, -10, 0, 30)
+label.Position = UDim2.new(0, 5, 0, 25)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.new(1, 1, 1)
+label.Font = Enum.Font.SourceSansBold
+label.TextSize = 22
+label.Text = "Loading..."
+label.Parent = frame
+
+-- Función para actualizar el valor desde StatPoints
+local function UpdateStatPoints()
+	while true do
+		pcall(function()
+			local statPointsVal = Player.PlayerGui
+				:WaitForChild("HUD", 5)
+				:WaitForChild("Bottom", 5)
+				:WaitForChild("Stats", 5)
+				:WaitForChild("StatPoints", 5)
+				:WaitForChild("Val", 5)
+
+			label.Text = statPointsVal.Text or "0"
+		end)
+		task.wait(1)
+	end
+end
+
+-- Ejecutar actualización
+task.spawn(UpdateStatPoints)
+
+-- Reaplicar si el HUD se regenera
+Player.PlayerGui.ChildAdded:Connect(function(child)
+	if child.Name == "HUD" then
+		task.wait(2)
+		task.spawn(UpdateStatPoints)
+	end
+end)
+
+
+-- Función para enviar notificaciones
+local function SendNotification(Title, Text, Duration)
+    game:GetService("StarterGui"):SetCore("SendNotification", {Title = Title, Text = Text, Duration = Duration})
+end
+
+-- Maneja la conexión del jugador
+local Conn
+Conn = Player.CharacterAdded:Connect(function()
+    -- Espera a que el personaje del jugador se cargue
+    Player.Character:WaitForChild("HumanoidRootPart", 30)
+
+    -- Mueve al jugador a la posición inicial
+    repeat
+        task.wait()
+        Player.Character.HumanoidRootPart.CFrame = CFrame.new(-569.78302, 23.587471, -2883.4939)
+    until Player.Character:FindFirstChild("PowerOutput")
+
+    -- Conecta un evento para manejar los cambios de texto en el chat
+    local Conn2
+    Conn2 = VRZ:WaitForChild("HUD", 30).Bottom.ChatGui.TextLabel:GetPropertyChangedSignal("Text"):Connect(function()
+        Last = tick()
+
+        task.wait(10)
+
+        -- Verifica si se ha pasado un tiempo de espera determinado
+        if tick() - Last >= 10 and BoostFail < 5 and not Doing then
+            Doing = true
+
+            -- Verifica si se ha alcanzado el límite máximo de puntos
+            if Finished then
+                Conn:Disconnect()
+                Conn2:Disconnect()
+                return
+            end
+
+            -- Incrementa el contador de reinicios
+            HardResets += 1
+
+            -- Reinicia el juego si se ha alcanzado un límite de reinicios
+            if HardResets >= 10 then
+                makefolder("Haunt rejoin")
+            end
+
+            -- Detiene y reinicia el script
+            Fixing = true
+            Stop = true
+
+            -- Mata al jugador
+            Player.Character.Humanoid.Health = 0
+            Player.Character.Head:Destroy()
+
+            -- Espera a que se cargue un nuevo personaje
+            Player.CharacterAdded:Wait()
+
+            -- Espera a que se cargue el objeto PowerOutput
+            Player.Character:WaitForChild("PowerOutput", 30)
+
+            task.wait(1)
+
+            -- Reinicia el script
+            Stop = false
+
+            -- Determina qué ranura se debe usar
+            local took = "none"
+            if WaitingForPointSlot then
+                took = "namek"
+                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+            else
+                took = "point"
+                Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+            end
+
+            -- Detiene el script
+            Stop = true
+
+            -- Guarda una referencia al personaje actual
+            local Char = Player.Character
+
+            -- Cambia de ranura después de un tiempo de espera
+            task.delay(6, function()
+                Stop = false
+
+                -- Verifica si el personaje sigue siendo el mismo
+                if Player.Character == Char then
+                    -- Cambia de ranura según la ranura que se usó anteriormente
+                    if took == "namek" then
+                        Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                    else
+                        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                    end
+                end
+            end)
+
+            -- Espera a que se cargue un nuevo personaje
+            Player.CharacterAdded:Wait()
+
+            -- Reinicia el script
+            Doing = false
+            Fixing = false
+        end
+    end)
+end)
+
+-- Hilo para manejar los reinicios
+task.spawn(function()
+    while true do
+        -- Verifica si se ha alcanzado el límite de intentos de reinicio
+        if BoostFail >= 5 then
+            Stop = true
+
+            -- Espera un tiempo determinado
+            task.wait()
+
+            -- Cambia de ranura y reinicia el juego
+            if not Settings.IsPointSlotANamekian and Player.Character.Race.Value ~= "Namekian" then
+                local Tries = 0
+
+                repeat
+                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+
+                    task.wait(6)
+
+                    -- Reinicia el juego si se ha alcanzado el límite de intentos
+                    if Tries >= 3 then
+                        makefolder("HauntRejoin")
+                    end
+
+                    -- Verifica si el jugador es un Namekiano
+                    if Player.Character.Race.Value ~= "Namekian" then
+                        Tries += 1
+                    end
+
+                until Player.Character.Race.Value == "Namekian"
+
+                -- Reinicia el juego
+                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+
+            elseif Player.Character.Race.Value == "Namekian" then
+                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+
+                task.wait(6)
+
+                -- Reinicia el juego
+                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+            end
+
+            -- Termina el hilo
+            break
+        end
+
+        task.wait()
+    end
+end)
+
+-- Loop principal
+while true do
+    -- Maneja el cambio de ranura si el jugador no es un Namekiano
+    pcall(function()
+        if Player.Character.Race.Value ~= "Namekian" and not Settings.IsPointSlotANamekian then
+            task.wait(1)
+
+            -- Cambia a la ranura Namekiana
+            Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+
+            -- Espera a que se cargue un nuevo personaje
+            Player.CharacterAdded:Wait()
+
+            -- Verifica si el script está en modo de reparación
+            if Fixing then
+                repeat task.wait() until not Fixing
+            end
+
+            task.wait(0.5)
+
+            -- Espera a que se cargue el objeto PowerOutput
+            Player.Character:WaitForChild("PowerOutput", 30)
+
+            task.wait()
+        end
+    end)  
+
+    -- Restablece la variable de espera para la ranura de puntos
+    WaitingForPointSlot = false
+
+    -- Conecta un evento para manejar los cambios en el personaje
+    Player.Character.HumanoidRootPart.ChildAdded:Connect(function(Child)
+        -- Verifica si el jugador ha recibido un impulso de estadísticas
+        if Child.Name == "Booster" then
+            Failed -= 1
+            Successful += 1
+            BoostFail = 0
+        end
+    end)
+
+    -- Incrementa el contador de intentos fallidos
+    Failed += 1
+    BoostFail += 1
+
+    -- Cambia a la ranura de puntos
+    pcall(function()
+        Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+    end)
+
+    -- Espera un tiempo determinado
+    task.wait(Settings.KamiChatDelay)
+
+    -- Verifica si el objeto ServerTraits está disponible
+    if not Player.Backpack:FindFirstChild("ServerTraits") then
+        pcall(function()
+            Player.Backpack:WaitForChild("ServerTraits", 30)
+        end)
+    end
+
+    -- Habla con Kami
+    if workspace.FriendlyNPCs:FindFirstChild("KAMI") then
+        Player.Backpack.ServerTraits.ChatStart:FireServer(workspace.FriendlyNPCs.KAMI.Chat)
+        Player.Backpack.ServerTraits.ChatAdvance:FireServer({"k"})
+    elseif game.ReplicatedStorage.Hidden:FindFirstChild("KAMI") then
+        Player.Backpack.ServerTraits.ChatStart:FireServer(game.ReplicatedStorage.Hidden.KAMI.Chat)
+        Player.Backpack.ServerTraits.ChatAdvance:FireServer({"k"})
+    end
+
+    -- Espera a que se cargue un nuevo personaje
+    Player.CharacterAdded:Wait()
+
+    -- Verifica si el script está en modo de reparación
+    if Fixing then
+        repeat task.wait() until not Fixing
+    end
+
+    -- Espera un tiempo determinado
+    task.wait(0.5)
+
+    -- Espera a que se cargue el objeto PowerOutput
+    Player.Character:WaitForChild("PowerOutput", 30)
+
+    -- Espera un tiempo determinado
+    task.wait()
+
+    -- Variable para salir del loop
+    end
+
+    -- Lógica para Namek con puntos máximos
+if race == "Namekian" and not Settings.IsPointSlotANamekian and statPoints >= Settings.MaxStatPoints then
+    Finished = true
+    Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
+    SendNotification("Namek", "Puntos Max", 5)
+
+    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
+        "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
+    }, true)
+
+    task.wait(6)
+
+    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+    return
+end
+
+-- Lógica general de puntos máximos
+if statPoints >= Settings.MaxPoints then
+    Finished = true
+    Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "MAX POINTS REACHED"
+    SendNotification("Veeruz", "Max points reached", 5)
+    return
+end
+
+-- Rehacer personaje si es Namek y puntos máximos alcanzados
+if statPoints >= Settings.MaxStatPoints then
+    Finished = true
+
+    if not Settings.IsPointSlotANamekian and race == "Namekian" then
+        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
+            "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
+        }, true)
+        task.wait(6)
+    end
+
+    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+end
