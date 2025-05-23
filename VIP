@@ -245,13 +245,13 @@ screenGui.Parent = Player:WaitForChild("PlayerGui")
 -- Crear Frame principal
 local frame = Instance.new("Frame")
 frame.Size = UDim2.new(0, 200, 0, 60)
-frame.Position = UDim2.new(0, 210, 0, 90) -- <-- Bajado un poco
+frame.Position = UDim2.new(0, 210, 0, 90)
 frame.BackgroundColor3 = Color3.new(0.1, 0.05, 0.1)
 frame.BorderColor3 = Color3.new(0.7, 0, 0.7)
 frame.BorderSizePixel = 3
 frame.Parent = screenGui
 
--- Crear título superior: INF STATS VIP
+-- Crear título superior
 local title = Instance.new("TextLabel")
 title.Size = UDim2.new(1, -10, 0, 20)
 title.Position = UDim2.new(0, 5, 0, 3)
@@ -273,9 +273,10 @@ label.TextSize = 22
 label.Text = "Loading..."
 label.Parent = frame
 
+
 -- Función para actualizar el valor desde StatPoints
 local function UpdateStatPoints()
-	while true do
+	while not _G.Stop do
 		pcall(function()
 			local statPointsVal = Player.PlayerGui
 				:WaitForChild("HUD", 5)
@@ -295,10 +296,28 @@ task.spawn(UpdateStatPoints)
 
 -- Reaplicar si el HUD se regenera
 Player.PlayerGui.ChildAdded:Connect(function(child)
-	if child.Name == "HUD" then
+	if child.Name == "HUD" and not _G.Stop then
 		task.wait(2)
 		task.spawn(UpdateStatPoints)
 	end
+end)
+
+-- Crear botón de detener
+local stopButton = Instance.new("TextButton")
+stopButton.Size = UDim2.new(0, 200, 0, 30)
+stopButton.Position = UDim2.new(0, 210, 0, 155) -- Debajo del frame
+stopButton.Text = "DETENER SCRIPT"
+stopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
+stopButton.TextColor3 = Color3.new(1,1,1)
+stopButton.Font = Enum.Font.SourceSansBold
+stopButton.TextSize = 18
+stopButton.Parent = screenGui
+
+-- Al hacer clic: detener todo
+stopButton.MouseButton1Click:Connect(function()
+	Stop = true
+	screenGui:Destroy()
+	warn("Script detenido manualmente.")
 end)
 
 
