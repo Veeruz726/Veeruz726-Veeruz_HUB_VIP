@@ -200,6 +200,7 @@ local function HandleLevelBelow44()
     task.wait(0.5)
 
     workspace.FriendlyNPCs["Quest Giver"]:Destroy()
+    workspace.FriendlyNPCs["Quest Giver"]:Destroy()
 
     Talk("Quest Giver",{"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.8)
