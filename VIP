@@ -302,25 +302,6 @@ Player.PlayerGui.ChildAdded:Connect(function(child)
 	end
 end)
 
--- Crear botón de detener
-local stopButton = Instance.new("TextButton")
-stopButton.Size = UDim2.new(0, 200, 0, 30)
-stopButton.Position = UDim2.new(0, 210, 0, 155) -- Debajo del frame
-stopButton.Text = "DETENER SCRIPT"
-stopButton.BackgroundColor3 = Color3.fromRGB(200, 0, 0)
-stopButton.TextColor3 = Color3.new(1,1,1)
-stopButton.Font = Enum.Font.SourceSansBold
-stopButton.TextSize = 18
-stopButton.Parent = screenGui
-
--- Al hacer clic: detener todo
-stopButton.MouseButton1Click:Connect(function()
-	Stop = true
-	screenGui:Destroy()
-	warn("Script detenido manualmente.")
-end)
-
-
 -- Función para enviar notificaciones
 local function SendNotification(Title, Text, Duration)
     game:GetService("StarterGui"):SetCore("SendNotification", {Title = Title, Text = Text, Duration = Duration})
