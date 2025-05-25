@@ -7,13 +7,9 @@ local Player = game.Players.LocalPlayer
 local whitelist = {
     [566311853] = true, --Roxana
     [4402007931] = true, --Veeruz
-    [5421277049] = true, --Daurent 
-    [1092649198] = true, --Leon
-    [605427249] = true, --Leon
-    [1320828348] = true, --Galahan
-    [1574131335] = true,  --Galahan 
+    [5421277049] = true, --Daurent  
     [1142974936] = true, --Principal
-    [2222593571] = true --Shadowknight1702  
+     
 }
 
 -- Si no está en whitelist, mostrar advertencia en pantalla
