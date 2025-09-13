@@ -59,7 +59,7 @@ local function WaitTill(instance, Text, ExtraTime, npc)
 end
 
 -- Función para hablar con un NPC
-local function Talk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
+local function VeeruzTalk(NPC, Content, WaitTime, Texts, Wait, SkipStop)
     -- Verifica si el NPC tiene un objeto de chat
     local Chat = NPC ~= "Korin" and workspace.FriendlyNPCs[NPC] or (NPC == "Korin" and workspace.FriendlyNPCs[NPC].Chat.Chat)
 
@@ -128,31 +128,31 @@ end
 
 -- Definimos la función para manejar el caso de nivel menor a 44
 local function HandleLevelBelow44()
-    Talk("Bulma", {"k", "Yes", "k"} , Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("Bulma", {"k", "Yes", "k"} , Settings.WaitTimeTalk, nil, false)
     task.wait(0.8)
 
-    Talk("Spaceship", {"No", "k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("Spaceship", {"No", "k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.5)
 
-    Talk("Trunks [Future]", {"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("Trunks [Future]", {"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.8)
 
-    Talk("TimeMachine",{"No", "k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("TimeMachine",{"No", "k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.5)
 
     workspace.FriendlyNPCs["Quest Giver"]:Destroy()
     workspace.FriendlyNPCs["Quest Giver"]:Destroy()
 
-    Talk("Quest Giver",{"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("Quest Giver",{"k","Yes","k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.8)
 
-    Talk("NamekianShip",{"k","No","k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("NamekianShip",{"k","No","k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.7)
 
-    Talk("Elder Kai",{"k","Yes","k", "k"}, Settings.WaitTimeTalk, nil, false)
+    VeeruzTalk("Elder Kai",{"k","Yes","k", "k"}, Settings.WaitTimeTalk, nil, false)
     task.wait(0.7)
 
-    Talk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
+    VeeruzTalk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
     task.wait(3)
 end
 
@@ -161,7 +161,7 @@ if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 55 then
     if tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) < 44 then
         HandleLevelBelow44() -- Llamamos a la función si el nivel es menor a 44
     elseif tonumber(Player.PlayerGui.HUD.Bottom.Stats.LVL.Val.Text) == 44 then
-        Talk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
+        VeeruzTalk("Korin", {"k", "k", "DRINK", "k"}, {"Hello", "When you drink it increases your power!", "*DRINKS*"}, true)
         task.wait(3)
     end
 else
@@ -310,10 +310,10 @@ Conn = Player.CharacterAdded:Connect(function()
             local took = "none"
             if WaitingForPointSlot then
                 took = "namek"
-                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
             else
                 took = "point"
-                Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
             end
 
             -- Detiene el script
@@ -330,9 +330,9 @@ Conn = Player.CharacterAdded:Connect(function()
                 if Player.Character == Char then
                     -- Cambia de ranura según la ranura que se usó anteriormente
                     if took == "namek" then
-                        Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                        VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
                     else
-                        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+                        VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
                     end
                 end
             end)
@@ -362,7 +362,7 @@ task.spawn(function()
                 local Tries = 0
 
                 repeat
-                    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                    VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                     task.wait(6)
 
@@ -379,15 +379,15 @@ task.spawn(function()
                 until Player.Character.Race.Value == "Namekian"
 
                 -- Reinicia el juego
-                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+                VeeruzTalk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
 
             elseif Player.Character.Race.Value == "Namekian" then
-                Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
+                VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true, true)
 
                 task.wait(6)
 
                 -- Reinicia el juego
-                Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
+                VeeruzTalk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false, true)
             end
 
             -- Termina el hilo
@@ -406,7 +406,7 @@ while true do
             task.wait(1)
 
             -- Cambia a la ranura Namekiana
-            Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+            VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
 
             -- Espera a que se cargue un nuevo personaje
             Player.CharacterAdded:Wait()
@@ -444,7 +444,7 @@ while true do
 
     -- Cambia a la ranura de puntos
     pcall(function()
-        Talk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
+        VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.PointSlot}, Settings.WaitTimeSlotChange, {"Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"}, true)
     end)
 
     -- Espera un tiempo determinado
@@ -492,13 +492,13 @@ if race == "Namekian" and not Settings.IsPointSlotANamekian and statPoints >= Se
     Player.PlayerGui.HUD.Bottom.Stats.Labvel.TextLabel.Text = "Namek | Puntos Max"
     SendNotification("Namek", "Puntos Max", 5)
 
-    Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
+    VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
         "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
     }, true)
 
     task.wait(6)
 
-    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+    VeeruzTalk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
     return
 end
 
@@ -515,11 +515,11 @@ if statPoints >= Settings.MaxStatPoints then
     Finished = true
 
     if not Settings.IsPointSlotANamekian and race == "Namekian" then
-        Talk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
+        VeeruzTalk("Character Slot Changer", {"Yes", "k", Settings.NamekSlot}, Settings.WaitTimeSlotChange, {
             "Change Character Slots?", "Alright", "Which slot would you like to play in?", "Loading!"
         }, true)
         task.wait(6)
     end
 
-    Talk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
+    VeeruzTalk("Start New Game [Redo Character]", {"Yes", "k", "Yes"}, 0.6, nil, false)
 end
